@@ -67,7 +67,15 @@ jd_frac = jd_midnight + d_frac
 # calculate GMST angle 
 t_ut1 = (jd_frac - 2451545.0)/36525
 GMST_sec = 67310.54841 + (876600*60*60 + 8640184.812866)*t_ut1 + 0.093104*t_ut1**2 - 6.2*10**-6*t_ut1**3
-GMST_rad = (GMST_sec%86400)*w
+
+# calculate additional seconds
+add_sec = math.fmod(GMST_sec, 86400) 
+
+# convert additional seconds to radians
+add_rad = add_sec*w
+
+# ensure GMST_rad is within [0, 2pi)
+GMST_rad = math.fmod(add_rad + 2*math.pi, 2*math.pi)
 
 # calculate ECI vector 
 eci_x_km = ecef_x_km*math.cos(GMST_rad) + ecef_y_km*-math.sin(GMST_rad)
